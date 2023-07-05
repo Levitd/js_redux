@@ -1,11 +1,19 @@
-import { legacy_createStore as createStore } from "redux";
-import { taskReducer } from "./taskReducer";
+import taskReducer from "./task";
+import { loger } from "./middleware/loger";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import errorReducer from "./errors";
 
-const initialState = [
-    { id: 1, title: "Task1", complited: false },
-    { id: 2, title: "Task2", complited: false }
-];
-
-export function initiateStore() {
-    return createStore(taskReducer, initialState);
+const rootReducer = combineReducers({
+    errors: errorReducer,
+    tasks: taskReducer
+})
+function createStore() {
+    return configureStore({
+        reducer: rootReducer,
+        middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(loger),
+        devTools: process.env.NODE_ENV !== 'production',
+    }
+    );
 }
+
+export default createStore;
